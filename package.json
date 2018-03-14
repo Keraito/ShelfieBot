@@ -20,6 +20,7 @@
   "author": "Keraito <chakshunyu@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "firebase": "^4.11.0",
     "micro-bot": "^2.2.2"
   },
   "devDependencies": {
