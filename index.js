@@ -4,6 +4,7 @@ const {
   createAccount,
   currentUser,
   initializeFirebase,
+  labels,
   signIn
 } = require("./src/firebase.js");
 
@@ -51,6 +52,7 @@ const signupCommandString = "signup";
 const signinCommandString = "signin";
 
 // Commands.
+bot.command("labels", ({ reply }) => reply(labels()));
 bot.command(signupCommandString, ({ scene, session }) => {
   session.command = signupCommandString;
   scene.enter("firebaseUsername");
@@ -60,7 +62,9 @@ bot.command(signinCommandString, ({ scene, session }) => {
   scene.enter("firebaseUsername");
 });
 bot.command("username", ({ reply, session }) => reply(session.email));
-bot.command("user", ({ reply }) => reply(currentUser()));
+bot.command("user", ({ reply }) =>
+  reply(currentUser() ? "You're signed in." : "No user found.")
+);
 
 // Enter the scene of signing up in firebase when starting the bot.
 bot.start(({ scene }) => {
@@ -68,8 +72,9 @@ bot.start(({ scene }) => {
 });
 
 bot.hears(/https:\/\//, ({ reply, message }) => {
-  addArticle({ message: message.text });
-  reply(message.text);
+  const [link, ...labels] = message.text.split(" ");
+  addArticle({ message: link, labels });
+  reply(link);
 });
 
 module.exports = bot;
