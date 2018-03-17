@@ -7,6 +7,7 @@ const {
   labels,
   signIn
 } = require("./src/firebase.js");
+const { linkInformation } = require("./src/linkInformation.js");
 
 initializeFirebase();
 
@@ -71,10 +72,11 @@ bot.start(({ scene }) => {
   scene.enter("firebaseUsername");
 });
 
-bot.hears(/https:\/\//, ({ reply, message }) => {
+bot.hears(/https:\/\//, async ({ reply, message }) => {
   const [link, ...labels] = message.text.split(" ");
-  addArticle({ message: link, labels });
-  reply(link);
+  const linkData = await linkInformation({ link });
+  addArticle({ message: link, labels, ...linkData });
+  reply(`'${linkData.title}' has been added to your Shelfie.`);
 });
 
 module.exports = bot;

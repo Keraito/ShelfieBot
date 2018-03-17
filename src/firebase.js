@@ -1,5 +1,5 @@
 var firebase = require("firebase");
-const firebaseconfig = require("../firebaseconfig.js");
+const firebaseconfig = require("./firebaseconfig.js");
 
 var firebaseLabels = [];
 
@@ -22,7 +22,7 @@ exports.createAccount = ({ email, password }) =>
     .auth()
     .createUserWithEmailAndPassword(email, password)
     .then(_ => linkLabels())
-    .then(r => "User Creation Succeeded")
+    .then(r => "Account created succeeded.")
     .catch(e => e.message);
 
 exports.signIn = ({ email, password }) =>
@@ -30,25 +30,27 @@ exports.signIn = ({ email, password }) =>
     .auth()
     .signInWithEmailAndPassword(email, password)
     .then(_ => linkLabels())
-    .then(r => "You signed in successfully!")
+    .then(r => "You signed in successfully.")
     .catch(e => e.message);
 
 exports.currentUser = () => firebase.auth().currentUser;
 
-exports.addArticle = ({ message, labels = [] }) => {
+exports.addArticle = ({ date, labels = [], message, title }) => {
   var user = firebase.auth().currentUser;
   const userPath = `users/${user.uid}`;
   const articlesPath = `/articles`;
   const labelsPath = `/labels`;
 
+  // Get a new unique key for the article.
   var newPostKey = firebase
     .database()
     .ref(userPath + articlesPath)
     .push().key;
 
   const updates = {};
-  const articleUpdate = { url: message, labels: {} };
+  const articleUpdate = { url: message, labels: {}, date, title };
 
+  // Create the labels that do not exist in the DB yet.
   labels
     .filter(label => !firebaseLabels.includes(label))
     .map(label => ({
@@ -59,16 +61,11 @@ exports.addArticle = ({ message, labels = [] }) => {
         .push().key
     }))
     .forEach(labelObject => {
-      // Create the labels.
       updates[`${labelsPath}/${labelObject.labelKey}`] = labelObject.label;
     });
 
-  labels.forEach(
-    l =>
-      // Put the labels in the article object.
-      (articleUpdate["labels"][l] = true)
-  );
-
+  // Put the labels in the article object.
+  labels.forEach(l => (articleUpdate["labels"][l] = true));
   updates[`${articlesPath}/${newPostKey}`] = articleUpdate;
 
   return firebase
