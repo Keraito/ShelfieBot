@@ -15,13 +15,17 @@ const linkLabels = () =>
       }
     });
 
-exports.labels = () => firebaseLabels;
+exports.labels = () =>
+  firebaseLabels
+    .slice()
+    .sort()
+    .join("\n");
 
 exports.createAccount = ({ email, password }) =>
   firebase
     .auth()
     .createUserWithEmailAndPassword(email, password)
-    .then(_ => linkLabels())
+    .then(r => linkLabels())
     .then(r => "Account created succeeded.")
     .catch(e => e.message);
 
@@ -29,7 +33,7 @@ exports.signIn = ({ email, password }) =>
   firebase
     .auth()
     .signInWithEmailAndPassword(email, password)
-    .then(_ => linkLabels())
+    .then(r => linkLabels())
     .then(r => "You signed in successfully.")
     .catch(e => e.message);
 
