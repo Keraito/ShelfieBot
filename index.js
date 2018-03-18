@@ -7,7 +7,7 @@ const {
   labels,
   signIn
 } = require("./src/firebase.js");
-const { linkInformation } = require("./src/linkInformation.js");
+const { linkInformation } = require("./src/linkinformation.js");
 
 initializeFirebase();
 
@@ -68,7 +68,8 @@ bot.command("user", ({ reply }) =>
 );
 
 // Enter the scene of signing up in firebase when starting the bot.
-bot.start(({ scene }) => {
+bot.start(({ scene, session }) => {
+  session.command = signinCommandString;
   scene.enter("firebaseUsername");
 });
 

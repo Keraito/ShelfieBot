@@ -36,4 +36,4 @@ node_modules
 coverage
 
 # Firebase Configuration Information
-firebaseconfig.js
+# firebaseconfig.js
